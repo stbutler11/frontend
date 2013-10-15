@@ -21,7 +21,7 @@ trait Omniture {
       "registrationType" -> "basicIdentity:Anewreg::theguardian",
       "omnitureEvent" -> "event30"
     )
-    new IdentityPage(id, webTitle, analyticsName, Some(newMetadata)) with TrackingParams
+    new IdentityPage(id, webTitle, analyticsName, overriddenMetadata = Some(newMetadata)) with TrackingParams
   }
 
   def registrationError(idRequest: IdentityRequest): IdentityPage with TrackingParams = {
@@ -31,7 +31,7 @@ trait Omniture {
       "registrationType" -> "basicIdentity:Anewreg::theguardian",
       "omnitureEvent" -> "event33"
     )
-    new IdentityPage(id, webTitle, analyticsName, Some(newMetadata)) with TrackingParams
+    new IdentityPage(id, webTitle, analyticsName, overriddenMetadata = Some(newMetadata)) with TrackingParams
   }
 
   def signinAuthenticationError(idRequest: IdentityRequest) : IdentityPage with TrackingParams = {
@@ -41,7 +41,7 @@ trait Omniture {
       "omnitureEvent" -> "event34",
       "omnitureErrorMessage" -> "Authentication failed"
     )
-    new IdentityPage(id, webTitle, analyticsName, Some(newMetadata)) with TrackingParams
+    new IdentityPage(id, webTitle, analyticsName, overriddenMetadata = Some(newMetadata)) with TrackingParams
   }
 
   def signinValidationError(idRequest: IdentityRequest) : IdentityPage with TrackingParams = {
@@ -51,7 +51,7 @@ trait Omniture {
       "omnitureEvent" -> "event34",
       "omnitureErrorMessage" -> "Validation failed"
     )
-    new IdentityPage(id, webTitle, analyticsName, Some(newMetadata)) with TrackingParams
+    new IdentityPage(id, webTitle, analyticsName, overriddenMetadata = Some(newMetadata)) with TrackingParams
   }
 }
 

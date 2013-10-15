@@ -26,7 +26,9 @@ trait MetaData {
     "web-title" -> webTitle,
     "build-number" -> buildNumber,
     "analytics-name" -> analyticsName,
-    "blockAds" -> false
+    "blockAds" -> false,
+    "showAdBlock" -> true,
+    "showGlobalNav" -> true
   )
 
   def openGraph: List[(String, Any)] = List(
