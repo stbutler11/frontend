@@ -10,7 +10,7 @@ import com.google.inject.{Inject, Singleton}
 import idapiclient.IdApiClient
 import play.api.i18n.Messages
 import idapiclient.EmailPassword
-import utils.SafeLogging
+import utils.{AuthRequest, SafeLogging}
 import form.Mappings.{idEmail, idPassword}
 import scala.concurrent.Future
 
@@ -20,7 +20,8 @@ class SigninController @Inject()(returnUrlVerifier: ReturnUrlVerifier,
                                  api: IdApiClient,
                                  idRequestParser: IdRequestParser,
                                  idUrlBuilder: IdentityUrlBuilder,
-                                 signInService : PlaySigninService)
+                                 signInService : PlaySigninService,
+                                 authAction: utils.AuthAction)
   extends Controller with ExecutionContexts with SafeLogging {
 
   val page = IdentityPage("/signin", "Sign in", "signin")
@@ -34,6 +35,11 @@ class SigninController @Inject()(returnUrlVerifier: ReturnUrlVerifier,
       "keepMeSignedIn" -> Forms.boolean
     )
   )
+
+  def test = authAction.apply { authRequest =>
+    idRequestParser(authRequest)
+    Ok(s"logged in user's id: ${authRequest.user.getId()}")
+  }
 
   def renderForm = Action { implicit request =>
     logger.trace("Rendering signin form")
