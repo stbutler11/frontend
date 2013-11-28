@@ -5,30 +5,50 @@
     }
     .item {
         width: 100%;
-        border-top: 2px solid #ffffff;
-        background-color: #ececec;
         margin-top: 0;
         padding: $gs-baseline 0;
+        border-top: 2px solid $c-newsAccent;
+
+        @include mq(tablet) {
+            border-color: #ffffff;
+            background-color: #ececec;
+        }
+        &:before {
+            display: none;
+        }
     }
     .item__link {
         border-top: 0;
-        margin-left: 15%;
-        @include mq(tablet, desktop) {
-            margin-left: 20%;
-        }
     }
     .item__title {
         margin-top: 0;
+        @include box-sizing(border-box);
+
+        @include mq(tablet) {
+            margin-left: 20%;
+        }
+        @include mq(desktop) {
+            margin-left: 15%;
+        }
+        @include mq(wide) {
+            margin-left: 10%;
+        }
     }
     .item__image-container {
         display: block;
-        float: right;
         padding: 0;
         margin: 0;
-        margin-right: $gs-gutter;
-        width: gs-span(3);
-        @include mq(tablet, desktop) {
+
+        @include mq(tablet) {
+            float: right;
+            margin-right: $gs-gutter;
             width: gs-span(2);
+        }
+        @include mq(desktop) {
+            width: gs-span(3);
+        }
+        @include mq(wide) {
+            width: gs-span(4);
         }
     }
     .responsive-img {
@@ -38,77 +58,152 @@
     }
     .item__section {
         text-transform: uppercase;
-        top: $gs-baseline;
-        left: $gs-gutter;
-        position: absolute;
         color: $c-newsDefault;
         @include fs-bodyHeading(1);
         font-weight: bold;
+        @include mq(tablet) {
+            top: $gs-baseline;
+            left: $gs-gutter;
+            position: absolute;
+        }
+    }
+    .item__byline {
+        display: none;
     }
     .item__standfirst {
         display: block;
         margin-top: $gs-baseline/2;
-        margin-left: 15%;
-        @include mq(tablet, desktop) {
+
+        @include mq(tablet) {
             margin-left: 20%;
+        }
+        @include mq(desktop) {
+            margin-left: 15%;
+        }
+        @include mq(wide) {
+            margin-left: 10%;
+        }
+    }
+    .item:nth-child(n+2) {
+        @include mq($to: tablet) {
+            .item__image-container {
+                display: none;
+            }
+            .item__standfirst {
+                display: none;
+            }
         }
     }
     .item--has-image {
         .item__title,
         .item__standfirst {
-            width: 30%;
+            @include mq(tablet) {
+                width: 30%;
+            }
+            @include mq(desktop) {
+                width: 35%;
+            }
+            @include mq(wide) {
+                width: 40%;
+            }
+        }
+    }
+    .item--has-no-image {
+        .item__title {
+            @include fs-headline(4, $size-only: true);
+        }
+        .item__standfirst {
+            @include fs-headline(2, $size-only: true);
         }
     }
     .item__meta {
-        position: absolute;
-        left: $gs-gutter;
-        top: $gs-baseline*3;
+        @include mq(tablet) {
+            position: absolute;
+            left: $gs-gutter;
+            top: $gs-baseline*3;
+        }
     }
     .item__sublinks {
-        display: none;
+        clear: both;
+        padding-top: 1px;
     }
     .item__sublink {
         clear: both;
         margin-top: $gs-baseline;
         padding-top: $gs-baseline;
-        border-top: 2px solid #ffffff;
+        border-top: 1px solid $c-newsAccent;
+        @include box-sizing(border-box);
+        @include mq(tablet) {
+            border-top-color: #ffffff;
+        }
+        @include mq(wide) {
+            width: 50%;
+            float: left;
+            clear: none;
+        }
+    }
+    .item__sublink--live:before {
+        content: 'live';
+        text-transform: uppercase;
+        position: absolute;
+        left: $gs-gutter;
+        color: #ffffff;
+        background-color: $c-live;
+        padding: 5px 3px;
+        @include fs-data(5);
+        font-weight: bold;
     }
     .item__sublink:nth-child(n+3) {
         display: none !important;
     }
+    .item__sublink:nth-child(even) {
+        @include mq(wide) {
+            border-left: 1px solid #ffffff;
+        }
+    }
     .item__sublink__title {
-        width: 30%;
-        float: left;
-        margin-left: 15%;
-        @include mq(tablet, desktop) {
+        @include mq(tablet) {
+            float: left;
+            margin-left: 20%;
+            width: 30%;
+        }
+        @include mq(desktop) {
+            margin-left: 15%;
+        }
+        @include mq(wide) {
             margin-left: 20%;
         }
     }
     .item__sublink__standfirst {
-        margin-left: 50%;
-        margin-right: 10%;
+        @include mq($to: tablet) {
+            display: none;
+        }
+        @include mq(tablet) {
+            margin-left: 55%;
+            margin-right: 5%;
+        }
     }
 
     // high importance
     .item:nth-child(1) {
         .item__title {
-            @include fs-headline(4, $size-only: true);
-            @include mq(tablet, desktop) {
-                @include fs-headline(3, $size-only: true);
+            @include fs-headline(3, $size-only: true);
+            @include mq(desktop) {
+                @include fs-headline(4, $size-only: true);
             }
         }
         .item__standfirst {
-            @include fs-headline(3, $size-only: true);
-            @include mq(tablet, desktop) {
-                @include fs-headline(2, $size-only: true);
+            @include fs-headline(2, $size-only: true);
+            @include mq(desktop) {
+                @include fs-headline(3, $size-only: true);
             }
         }
         .item__image-container {
-            @include mq(tablet, desktop) {
+            @include mq(tablet) {
                 width: gs-span(4);
             }
-            @include mq(desktop, wide) {
-                width: gs-span(6);
+            @include mq(desktop) {
+                width: gs-span(5);
             }
             @include mq(wide) {
                 width: gs-span(7);
@@ -135,6 +230,12 @@
         .item__image-container {
             display: none;
         }
+        .item__title {
+            @include fs-headline(4, $size-only: true);
+        }
+        .item__standfirst {
+            @include fs-headline(2, $size-only: true);
+        }
         .item__title,
         .item__standfirst {
             width: auto;
@@ -144,9 +245,14 @@
     .item:nth-child(3),
     .item:nth-child(7) {
         .item__image-container {
-            width: gs-span(5);
-            @include mq(tablet, desktop) {
+            @include mq(tablet) {
                 width: gs-span(3);
+            }
+            @include mq(desktop) {
+                width: gs-span(4);
+            }
+            @include mq(wide) {
+                width: gs-span(5);
             }
         }
     }
