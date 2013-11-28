@@ -1,0 +1,88 @@
+.container--list {
+    .collection {
+        margin: 0;
+    }
+    .item {
+        width: 100%;
+        min-height: gs-height(3) + ($gs-baseline*2);
+        border-top: 2px solid #ffffff;
+        background-color: #ececec;
+        margin-top: 0;
+        padding: $gs-baseline gs-span(9) $gs-baseline gs-span(3);
+    }
+    .item__link {
+        border-top: 0;
+    }
+    .item__image-container {
+        display: block;
+        position: absolute;
+        right: $gs-gutter;
+        top: $gs-baseline;
+        height: gs-height(3);
+        width: gs-span(3);
+        padding: 0;
+        margin: 0;
+    }
+    .item__section {
+        text-transform: uppercase;
+        top: $gs-baseline;
+        left: $gs-gutter;
+        position: absolute;
+        color: $c-newsDefault;
+        @include fs-bodyHeading(1);
+        font-weight: bold;
+    }
+    .item__standfirst {
+        display: block;
+        margin-top: $gs-baseline/2;
+    }
+    .item__meta {
+        position: absolute;
+        left: $gs-gutter;
+        top: $gs-baseline*3;
+    }
+
+    // high importance
+    .item:nth-child(1) {
+        padding-right: gs-span(8);
+        min-height: gs-height(7) + ($gs-baseline*2);
+
+        .item__title {
+            @include fs-headline(4, $size-only: true);
+        }
+        .item__standfirst {
+            @include fs-headline(3, $size-only: true);
+        }
+        .item__image-container {
+            height: gs-height(7);
+            width: gs-span(7);
+        }
+    }
+    // no standfirst
+    .item:nth-child(3),
+    .item:nth-child(5) {
+        .item__standfirst {
+            display: none;
+        }
+    }
+    // no image
+    .item:nth-child(4),
+    .item:nth-child(6) {
+        min-height: 0;
+        padding-right: gs-span(1);
+
+        .item__image-container {
+            display: none;
+        }
+    }
+    // big standfirst
+    .item:nth-child(2),
+    .item:nth-child(7) {
+        min-height: gs-height(5) + ($gs-baseline*2);
+
+        .item__image-container {
+            height: gs-height(5);
+            width: gs-span(5);
+        }
+    }
+}

@@ -20,6 +20,7 @@
                 @RemoveOuterParaHtml(trail.headline)
             </h@if(containerIndex == 0 && index == 0){1}else{2}>
         </a>
+        <p class="item__section">@trail.section</p>
         @if(tone == "comment") {
             @trail.byline.map { byLine =>
                 <p class="item__byline tone-colour">@Html(byLine)</p>

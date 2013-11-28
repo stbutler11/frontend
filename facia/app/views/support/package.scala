@@ -43,7 +43,7 @@ object FindStyle {
       ("au/sport/regular-stories", SportContainer())
     )),
     ("uk", Map(
-      ("uk/news/regular-stories", NewsContainer()),
+      ("uk/news/regular-stories", ListContainer(showMore = false)),
       ("uk/sport/regular-stories", SportContainer()),
       ("uk/commentisfree/regular-stories", CommentContainer()),
       ("uk/culture/regular-stories", FeaturesContainer()),
