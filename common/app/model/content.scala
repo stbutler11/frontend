@@ -27,7 +27,6 @@ class Content protected (val delegate: ApiContent) extends Trail with Tags with 
   lazy val blockAds: Boolean = videoAssets.exists(_.blockAds)
   lazy val isLiveBlog: Boolean = delegate.isLiveBlog
   lazy val openGraphImage: String = mainPicture.flatMap(_.largestImage.flatMap(_.url)).getOrElse(conf.Configuration.facebook.imageFallback)
-  lazy val storyPackage: List[Content] = Nil
 
   lazy val witnessAssignment = delegate.references.find(_.`type` == "witness-assignment")
     .map(_.id).map(Reference(_)).map(_._2)
@@ -107,7 +106,7 @@ class Content protected (val delegate: ApiContent) extends Trail with Tags with 
     "og:url" -> webUrl,
     "og:description" -> trailText.map(StripHtmlTagsAndUnescapeEntities(_)).getOrElse("")
   )
-    
+
   override def cards: List[(String, Any)] = super.cards ++ List(
     "twitter:app:url:googleplay" -> webUrl.replace("http", "guardian")
   )
@@ -170,7 +169,7 @@ class Article(content: ApiContent) extends Content(content) {
     "og:image" -> openGraphImage
   ) ++ tags.map("article:tag" -> _.name) ++
     tags.filter(_.isContributor).map("article:author" -> _.webUrl)
-  
+
   override def cards: List[(String, Any)] = super.cards ++ List(
     "twitter:card" -> "summary_large_image"
   ) ++ mainPicture.flatMap(_.largestImage.map( "twitter:image:src" -> _.path ))
@@ -241,7 +240,7 @@ class Gallery(content: ApiContent) extends Content(content) {
 
   private lazy val galleryImages: List[ImageElement] = imageMap("gallery")
   lazy val largestCrops: List[ImageAsset] = galleryImages.flatMap(_.largestImage)
-  
+
   override def cards: List[(String, Any)] = super.cards ++ List(
     "twitter:card" -> "gallery",
     "twitter:title" -> linkText
@@ -262,7 +261,7 @@ class ImageContent(content: ApiContent) extends Content(content) {
   lazy val contentType = "ImageContent"
   override lazy val analyticsName = s"GFE:$section:$contentType:${id.substring(id.lastIndexOf("/") + 1)}"
   override lazy val metaData: Map[String, Any] = super.metaData + ("content-type" -> contentType)
-  
+
   override def cards: List[(String, Any)] = super.cards ++ List(
     "twitter:card" -> "photo"
   ) ++ mainPicture.flatMap(_.largestImage.map( "twitter:image:src" -> _.path ))

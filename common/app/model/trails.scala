@@ -27,6 +27,7 @@ trait Trail extends Elements with Tags with FaciaFields {
   def leadingParagraphs: List[org.jsoup.nodes.Element] = Nil
   def byline: Option[String] = None
   def trailType: Option[String] = None
+  lazy val storyPackage: List[Content] = Nil
 }
 
 //Facia tool values

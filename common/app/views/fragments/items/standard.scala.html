@@ -29,6 +29,20 @@
         @trail.trailText.map { text =>
             <div class="item__standfirst">@Html(text)</div>
         }
+        @if(trail.storyPackage.nonEmpty) {
+            <ul class="item__sublinks unstyled">
+                @trail.storyPackage.map{ subLink =>
+                    <li class="item__sublink">
+                        <h3 class="item__sublink__title">
+                            <a href="@LinkTo{@subLink.url}">@subLink.headline</a>
+                        </h3>
+                        @subLink.trailText.map { text =>
+                            <div class="item__sublink__standfirst">@Html(text)</div>
+                        }
+                    </li>
+                }
+            </ul>
+        }
         <div class="item__meta">
             <time class="item__timestamp js-item__timestamp"
                   itemprop="datePublished"
