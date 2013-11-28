@@ -27,6 +27,7 @@ class Content protected (val delegate: ApiContent) extends Trail with Tags with 
   lazy val blockAds: Boolean = videoAssets.exists(_.blockAds)
   lazy val isLiveBlog: Boolean = delegate.isLiveBlog
   lazy val openGraphImage: String = mainPicture.flatMap(_.largestImage.flatMap(_.url)).getOrElse(conf.Configuration.facebook.imageFallback)
+  lazy val storyPackage: List[Content] = Nil
 
   lazy val witnessAssignment = delegate.references.find(_.`type` == "witness-assignment")
     .map(_.id).map(Reference(_)).map(_._2)
@@ -135,9 +136,9 @@ object Content {
     }
   }
 
-  def apply(delegate: ApiContent, metaData: Option[Map[String, String]]): Content = {
+  def apply(delegate: ApiContent, metaData: Option[Map[String, String]], storyPackage: List[Content]): Content = {
     metaData match {
-      case Some(metaData) => new ContentWithMetaData(delegate, metaData)
+      case Some(metaData) => new ContentWithMetaData(delegate, metaData, storyPackage)
       case _ => apply(delegate)
     }
   }
@@ -267,7 +268,8 @@ class ImageContent(content: ApiContent) extends Content(content) {
   ) ++ mainPicture.flatMap(_.largestImage.map( "twitter:image:src" -> _.path ))
 }
 
-class ContentWithMetaData(content: ApiContent, metaData: Map[String, String]) extends Content(content) {
+class ContentWithMetaData(content: ApiContent, metaData: Map[String, String], itemStoryPackage: List[Content]) extends Content(content) {
   override lazy val headline: String = metaData.get("headline").getOrElse(super.headline)
   override lazy val group: Option[String] = metaData.get("group")
+  override lazy val storyPackage = itemStoryPackage
 }

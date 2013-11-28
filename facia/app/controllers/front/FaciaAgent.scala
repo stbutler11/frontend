@@ -130,7 +130,7 @@ trait ParseCollection extends ExecutionContexts with Logging {
         val response = ContentApi.item(id, edition).showFields("all").response
         response.onFailure{case t: Throwable => log.warn("%s: %s".format(id, t.toString))}
         for {l <- foldList; itemResponse <- response} yield {
-          itemResponse.content.map(Content(_, collectionItem.metaData)).map(_ +: l).getOrElse(l)
+          itemResponse.content.map(Content(_, collectionItem.metaData, itemResponse.storyPackage.map(Content(_)))).map(_ +: l).getOrElse(l)
         }
       }
       val sorted = results map { _.sortBy(t => collectionItems.indexWhere(_.id == t.id))}
