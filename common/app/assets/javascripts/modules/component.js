@@ -96,20 +96,20 @@ define([
      */
     Component.prototype.render = function(parent) {
         this.checkAttached();
-        var template = bonzo.create((this.template) ? this.template : document.getElementById('tmpl-'+ this.templateName).innerHTML)[0],
-            container = parent || document.body;
+        parent = parent || document.body;
+        var template = bonzo.create((this.template) ? this.template : document.getElementById('tmpl-'+ this.templateName).innerHTML)[0];
 
         this.elem = template;
-        this._prerender();
-        bonzo(container).append(this.elem);
-        this._ready();
+        this._render(parent);
     };
 
     /**
      * @param {Element} parent
      */
-    Component.prototype.fetch = function(parent) {
-        this._fetch();
+    Component.prototype._render = function(parent) {
+        this._prerender();
+        bonzo(parent).append(this.elem);
+        this._ready();
     };
 
     /**
@@ -131,25 +131,10 @@ define([
             method: 'get',
             crossOrigin: true
         }).then(
-            function render(resp) {
+            function setElem(resp) {
                 self.elem = bonzo.create(resp.html)[0];
-                self._prerender();
-
-                if (!self.destroyed) {
-                    bonzo(parent).append(self.elem);
-                    self._ready();
-                }
             }
         );
-    };
-
-    /**
-     * Throws an error if this is already attached to the DOM
-     */
-    Component.prototype.checkAttached = function() {
-        if (this.rendered) {
-            throw new ComponentError('Already rendered');
-        }
     };
 
     /**
@@ -168,6 +153,13 @@ define([
     Component.prototype._prerender = function() {
         this.elems = {};
         this.prerender();
+    };
+
+    /**
+     * @param {Element} parent
+     */
+    Component.prototype.fetch = function(parent) {
+        return this._fetch(parent).then(this._render.bind(this, parent));
     };
 
     /**
@@ -293,6 +285,15 @@ define([
         }
         this.detach();
         this.destroyed = true;
+    };
+
+    /**
+     * Throws an error if this is already attached to the DOM
+     */
+    Component.prototype.checkAttached = function() {
+        if (this.rendered) {
+            throw new ComponentError('Already rendered');
+        }
     };
 
     /**
