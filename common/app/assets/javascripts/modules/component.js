@@ -109,6 +109,13 @@ define([
      * @param {Element} parent
      */
     Component.prototype.fetch = function(parent) {
+        this._fetch();
+    };
+
+    /**
+     * @param {Element} parent
+     */
+    Component.prototype._fetch = function(parent) {
         this.checkAttached();
         var self = this,
             endpoint = this.endpoint,
