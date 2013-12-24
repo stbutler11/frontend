@@ -7,6 +7,7 @@ import play.api.libs.ws.Response
 import discussion.model.{DiscussionKey, Profile, Comment, CommentCount, Switch}
 import play.api.mvc.Headers
 import discussion.util.Http
+import play.api.libs.json.Json
 
 trait DiscussionApi extends Http with ExecutionContexts with Logging {
 
@@ -31,10 +32,11 @@ trait DiscussionApi extends Http with ExecutionContexts with Logging {
     }
   }
 
-  private def getJsonForUri(key: DiscussionKey, apiUrl: String): Future[CommentPage] = {
+  private def getCommentPage(key: DiscussionKey, page: String = "1", allResponses: Boolean = false, endpoint: String = ""): Future[CommentPage] = {
     def onError(r: Response) =
       s"Discussion API: Error loading comments id: $key status: ${r.status} message: ${r.statusText}"
 
+    val apiUrl = s"$apiRoot/discussion/$key$endpoint?pageSize=$pageSize&page=$page&orderBy=$orderBy&showSwitches=true" + (if(allResponses) "" else "&maxResponses=3")
     getJsonOrError(apiUrl, onError) map {
       json =>
         val comments = (json \\ "comments")(0).asInstanceOf[JsArray].value map {
@@ -69,11 +71,13 @@ trait DiscussionApi extends Http with ExecutionContexts with Logging {
   }
 
   def commentsFor(key: DiscussionKey, page: String, allResponses: Boolean = false): Future[CommentPage] = {
-    getJsonForUri(key, s"$apiRoot/discussion/$key?pageSize=$pageSize&page=$page&orderBy=$orderBy&showSwitches=true" + (if(allResponses) "" else "&maxResponses=3"))
+    getCommentPage(key, page, allResponses)
+    // getCommentPage(key, s"$apiRoot/discussion/$key?pageSize=$pageSize&page=$page&orderBy=$orderBy&showSwitches=true" + (if(allResponses) "" else "&maxResponses=3"))
   }
 
   def topCommentsFor(key: DiscussionKey, page: String): Future[CommentPage] = {
-    getJsonForUri(key, s"$apiRoot/discussion/$key/topcomments?pageSize=$pageSize&page=$page&orderBy=$orderBy&showSwitches=true")
+    getCommentPage(key, page, endpoint="/topcomments")
+    // getCommentPage(key, s"$apiRoot/discussion/$key/topcomments?pageSize=$pageSize&page=$page&orderBy=$orderBy&showSwitches=true")
   }
 
   def commentContext(id: Int): Future[(DiscussionKey, String)] = {
@@ -98,6 +102,29 @@ trait DiscussionApi extends Http with ExecutionContexts with Logging {
     getJsonOrError(apiUrl, onError, authHeader: _*) map {
       json =>
         Profile(json)
+    }
+  }
+
+  def postComment(key: DiscussionKey, commentBody: String): Future[Comment] = {
+    Future {
+      Comment(Json.parse("""{
+        "id": 5,
+        "body": "",
+        "responses": [],
+        "userProfile": {
+          "userId": "",
+          "displayName": "",
+          "webUrl": "",
+          "apiUrl": "",
+          "avatar": "",
+          "secureAvatarUrl": "",
+          "badge": []
+        },
+        "isoDateTime": "2011-10-10T09:25:49Z",
+        "status": "visible",
+        "numRecommends": 0,
+        "isHighlighted": false
+      }"""))
     }
   }
 

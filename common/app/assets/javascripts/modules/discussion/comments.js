@@ -39,7 +39,7 @@ var Comments = function(context, mediator, options) {
     this.setOptions(options);
 
     if (this.options.commentId) {
-        this.endpoint = '/discussion/comment-permalink/'+ this.options.commentId +'.json';
+        this.endpoint = '/discussion/comment-permalink/'+ this.options.commentId +'.json?allResponses=true';
     }
 };
 Component.define(Comments);
@@ -308,8 +308,7 @@ Comments.prototype.loadMore = function(e) {
 Comments.prototype.fetchComments = function(options) {
     var url = options.comment ? '/discussion/comment-permalink/'+ options.comment +'.json' :
                 '/discussion/'+ this.options.discussionId +'.json?'+
-                (options.page ? '&page='+ options.page : '') +
-                '&maxResponses=3';
+                (options.page ? '&page='+ options.page : '');
     
     return ajax({
         url: url,

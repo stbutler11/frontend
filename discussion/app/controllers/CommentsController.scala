@@ -6,38 +6,37 @@ import common.JsonComponent
 import play.api.mvc.{ Action, RequestHeader, SimpleResult }
 import play.api.libs.json.Json
 import discussion.model.{ DiscussionKey, Comment }
+import play.api.data._
+import play.api.data.Forms._
 
 trait CommentsController extends DiscussionController {  
 
   def commentPermalinkJson(id: Int) = commentPermalink(id)
-  def commentPermalink(id: Int) = Action.async { 
-    implicit request =>
-      discussionApi.commentContext(id) flatMap { context => getComments(context._1, context._2) } 
+  def commentPermalink(id: Int) = Action.async { implicit request =>
+    discussionApi.commentContext(id) flatMap { context => getComments(context._1, context._2) } 
   }
 
   def commentJson(id: Int) = comment(id)
-  def comment(id: Int) = Action.async {
-    implicit request =>
-      val comment = discussionApi.commentFor(id)
-      comment map {
-        comment =>
-          Cached(60) {
-            if (request.isJson)
-              JsonComponent(
-                "html" -> views.html.fragments.comment(comment).toString
-              )
-            else
-              Ok(views.html.fragments.comment(comment))
-          }
-      }
+  def comment(id: Int) = Action.async { implicit request =>
+    val comment = discussionApi.commentFor(id)
+    comment map {
+      comment =>
+        Cached(60) {
+          if (request.isJson)
+            JsonComponent(
+              "html" -> views.html.fragments.comment(comment).toString
+            )
+          else
+            Ok(views.html.fragments.comment(comment))
+        }
+    }
   }
 
   def topComments(key: DiscussionKey) = comments(key, true)
   def topCommentsJson(key: DiscussionKey) = comments(key, true)
   def commentsJson(key: DiscussionKey) = comments(key)
-  def comments(key: DiscussionKey, isTopComments: Boolean = false) = Action.async { 
-    implicit request =>
-      getComments(key, request.getQueryString("page").getOrElse("1"), isTopComments)
+  def comments(key: DiscussionKey, isTopComments: Boolean = false) = Action.async { implicit request =>
+    getComments(key, request.getQueryString("page").getOrElse("1"), isTopComments)
   }
 
   def getComments(key: DiscussionKey, page: String = "1", isTopComments: Boolean = false)(implicit request: RequestHeader):Future[SimpleResult] = {
@@ -78,4 +77,25 @@ trait CommentsController extends DiscussionController {
     }
   }
 
+  def postComment(key: DiscussionKey) = Action.async { implicit request =>
+    case class PostComment(body: String)
+    val commentForm = Form(
+      mapping(
+        "body" -> text
+      )(PostComment.apply)(PostComment.unapply)
+    )
+    commentForm.bindFromRequest.fold(
+      errorForm => {
+        Future {Cached(60) {JsonComponent("html" -> "Error")}}
+      },
+      comment => {
+        discussionApi.postComment(key, comment.body) map {
+          comment =>
+            Cached(60) {
+              JsonComponent("html" -> views.html.fragments.comment(comment).toString)
+            }
+        }
+      }
+    )
+  }
 }
