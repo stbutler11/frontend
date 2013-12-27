@@ -12,7 +12,7 @@ import ExecutionContext.Implicits.global
 trait Http extends Logging {
 
   protected def getJsonOrError(url: String, onError: (Response) => String, headers: (String, String)*): Future[JsValue] = {
-    val start = currentTimeMillis()
+    val start = currentTimeMillis
     GET(url, headers: _*) map {
       response =>
         DiscussionHttpTimingMetric.recordTimeSpent(currentTimeMillis - start)
@@ -28,9 +28,34 @@ trait Http extends Logging {
     }
   }
 
+  protected def postOrError(url: String, onError: (Response) => String, headers: (String, String)*): Future[JsValue] = {
+    val start = currentTimeMillis
+    POST(url, headers: _*) map {
+      response => 
+        print (response.status)
+        print (response.body)
+        DiscussionHttpTimingMetric.recordTimeSpent(currentTimeMillis - start)
+
+        response.status match {
+          case 200 =>
+
+            Json.parse(response.body)
+
+          case _ =>
+            log.error(onError(response))
+            throw new RuntimeException(onError(response))
+        }
+    }
+  }
+
   protected def GET(url: String, headers: (String, String)*): Future[Response] = {
     log.debug(s"GET $url")
     WS.url(url).withHeaders(headers: _*).withRequestTimeout(2000).get()
+  }
+
+  protected def POST(url: String, headers: (String, String)*): Future[Response] = {
+    log.debug(s"POST $url")
+    WS.url(url).withHeaders(headers: _*).withRequestTimeout(2000).post("content")
   }
 
 }

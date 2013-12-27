@@ -78,18 +78,20 @@ trait CommentsController extends DiscussionController {
   }
 
   def postComment(key: DiscussionKey) = Action.async { implicit request =>
-    case class PostComment(body: String)
+    case class PostComment(body: String, GU_U: String)
     val commentForm = Form(
       mapping(
-        "body" -> text
+        "body" -> text,
+        "GU_U" -> text
       )(PostComment.apply)(PostComment.unapply)
     )
+
     commentForm.bindFromRequest.fold(
       errorForm => {
         Future {Cached(60) {JsonComponent("html" -> "Error")}}
       },
       comment => {
-        discussionApi.postComment(key, comment.body) map {
+        discussionApi.postComment(key, comment.body, comment.GU_U) map {
           comment =>
             Cached(60) {
               JsonComponent("html" -> views.html.fragments.comment(comment).toString)

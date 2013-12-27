@@ -24,7 +24,7 @@ GET     /discussion/*discussionKey.json                                         
 GET     /discussion/*discussionKey                                                                           controllers.DiscussionApp.comments(discussionKey: discussion.model.DiscussionKey)
 GET     /open/cta/article/*discussionKey.json                                                                controllers.CtaController.cta(discussionKey: discussion.model.DiscussionKey)
 
-POST    /discussion/*discussionKey/comment                                                                   controllers.DiscussionApp.postComment(discussionKey: discussion.model.DiscussionKey)
+POST    /discussion/*discussionKey/comment.json                                                              controllers.DiscussionApp.postComment(discussionKey: discussion.model.DiscussionKey)
 
 
 # Core Navigation

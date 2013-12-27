@@ -21,7 +21,7 @@ var Api = {
  * @param {Object.<string.*>}
  */
 Api.init = function(config) {
-    if ("https:" === document.location.protocol) {
+    if ('https:' === document.location.protocol) {
         Api.root = config.page.secureDiscussionApiRoot;
     } else {
         Api.root = config.page.discussionApiRoot;
@@ -35,15 +35,15 @@ Api.init = function(config) {
  * @param {Object.<string.*>} data
  * @return {Reqwest} a promise
  */
-Api.send = function(endpoint, method, data) {
+Api.send = function(endpoint, method, data, internal) {
     data = data || {};
     if (cookies.get('GU_U')) {
         data.GU_U = cookies.get('GU_U');
     }
 
     var request = ajax({
-        url: Api.root + endpoint,
-        type: ("get" === method) ? 'jsonp' : 'json',
+        url: (internal ? '' : Api.root) + endpoint,
+        type: ('get' === method) ? 'jsonp' : 'json',
         method: method,
         crossOrigin: true,
         data: data,
@@ -63,9 +63,10 @@ Api.send = function(endpoint, method, data) {
  */
 Api.postComment = function(discussionId, comment) {
     var endpoint = '/discussion/'+ discussionId +'/comment'+
-        (comment.replyTo ? '/'+ comment.replyTo.commentId +'/reply' : '');
+        (comment.replyTo ? '/'+ comment.replyTo.commentId +'/reply' : '')
+        +'.json';
     
-    return Api.send(endpoint, 'post', comment);
+    return Api.send(endpoint, 'post', comment, true);
 };
 
 /**

@@ -59,6 +59,14 @@ trait DiscussionApi extends Http with ExecutionContexts with Logging {
     }
   }
 
+  def commentsFor(key: DiscussionKey, page: String, allResponses: Boolean = false): Future[CommentPage] = {
+    getCommentPage(key, page, allResponses)
+  }
+
+  def topCommentsFor(key: DiscussionKey, page: String): Future[CommentPage] = {
+    getCommentPage(key, page, endpoint="/topcomments")
+  }
+
   def commentFor(id: Int): Future[Comment] = {
     def onError(r: Response) =
       s"Error loading comment id: $id status: ${r.status} message: ${r.statusText}"
@@ -68,16 +76,6 @@ trait DiscussionApi extends Http with ExecutionContexts with Logging {
         val comment = (json \ "comment")
         Comment(comment)
     }
-  }
-
-  def commentsFor(key: DiscussionKey, page: String, allResponses: Boolean = false): Future[CommentPage] = {
-    getCommentPage(key, page, allResponses)
-    // getCommentPage(key, s"$apiRoot/discussion/$key?pageSize=$pageSize&page=$page&orderBy=$orderBy&showSwitches=true" + (if(allResponses) "" else "&maxResponses=3"))
-  }
-
-  def topCommentsFor(key: DiscussionKey, page: String): Future[CommentPage] = {
-    getCommentPage(key, page, endpoint="/topcomments")
-    // getCommentPage(key, s"$apiRoot/discussion/$key/topcomments?pageSize=$pageSize&page=$page&orderBy=$orderBy&showSwitches=true")
   }
 
   def commentContext(id: Int): Future[(DiscussionKey, String)] = {
@@ -95,8 +93,8 @@ trait DiscussionApi extends Http with ExecutionContexts with Logging {
   def myProfile(headers: Headers): Future[Profile] = {
     def onError(r: Response) =
       s"Discussion API: Error loading profile, status: ${r.status}, message: ${r.statusText}, response: ${r.body}"
+    
     val apiUrl = s"$apiRoot/profile/me"
-
     val authHeader = AuthHeaders.filterHeaders(headers).toSeq
 
     getJsonOrError(apiUrl, onError, authHeader: _*) map {
@@ -105,7 +103,17 @@ trait DiscussionApi extends Http with ExecutionContexts with Logging {
     }
   }
 
-  def postComment(key: DiscussionKey, commentBody: String): Future[Comment] = {
+  def postComment(key: DiscussionKey, commentBody: String, auth: String): Future[Comment] = {
+    def onError(r: Response) =
+      s"Discussion API: Error posting comments, status: ${r.status}, message: ${r.statusText}, response: ${r.body}"
+
+    val apiUrl = s"$apiRoot/discussion/$key/comment"
+    print (auth)
+
+    postOrError(apiUrl, onError) map {
+      json =>
+        print(json)
+    }
     Future {
       Comment(Json.parse("""{
         "id": 5,
@@ -130,6 +138,9 @@ trait DiscussionApi extends Http with ExecutionContexts with Logging {
 
   override protected def getJsonOrError(url: String, onError: (Response) => String, headers: (String, String)*) =
     super.getJsonOrError(url, onError, headers :+ guClientHeader: _*)
+
+  override protected def postOrError(url: String, onError: (Response) => String, headers: (String, String)*) = 
+    super.postOrError(url, onError, headers :+ guClientHeader: _*)
 
   private def guClientHeader = ("GU-Client", clientHeaderValue)
 }
