@@ -28,22 +28,18 @@ trait Http extends Logging {
     }
   }
 
-  protected def postOrError(url: String, onError: (Response) => String, headers: (String, String)*): Future[JsValue] = {
+  protected def postOrError(url: String, data: Map[String, Seq[String]], onError: (Response) => String, headers: (String, String)*): Future[JsValue] = {
     val start = currentTimeMillis
-    POST(url, headers: _*) map {
-      response => 
-        print (response.status)
-        print (response.body)
+    POST(url, data, headers: _*) map {
+      response =>
         DiscussionHttpTimingMetric.recordTimeSpent(currentTimeMillis - start)
 
         response.status match {
           case 200 =>
-
             Json.parse(response.body)
 
           case _ =>
-            log.error(onError(response))
-            throw new RuntimeException(onError(response))
+            onError(response)
         }
     }
   }
@@ -53,9 +49,9 @@ trait Http extends Logging {
     WS.url(url).withHeaders(headers: _*).withRequestTimeout(2000).get()
   }
 
-  protected def POST(url: String, headers: (String, String)*): Future[Response] = {
+  protected def POST(url: String, data: Map[String, Seq[String]], headers: (String, String)*): Future[Response] = {
     log.debug(s"POST $url")
-    WS.url(url).withHeaders(headers: _*).withRequestTimeout(2000).post("content")
+    WS.url(url).withHeaders(headers: _*).withRequestTimeout(2000).post(data)
   }
 
 }

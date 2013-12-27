@@ -108,39 +108,38 @@ trait DiscussionApi extends Http with ExecutionContexts with Logging {
       s"Discussion API: Error posting comments, status: ${r.status}, message: ${r.statusText}, response: ${r.body}"
 
     val apiUrl = s"$apiRoot/discussion/$key/comment"
-    print (auth)
+    val data = Map("body" -> Seq(commentBody), "GU_U" -> Seq(auth))
 
-    postOrError(apiUrl, onError) map {
+    postOrError(apiUrl, data, onError) map {
       json =>
-        print(json)
-    }
-    Future {
-      Comment(Json.parse("""{
-        "id": 5,
-        "body": "",
-        "responses": [],
-        "userProfile": {
-          "userId": "",
-          "displayName": "",
-          "webUrl": "",
-          "apiUrl": "",
-          "avatar": "",
-          "secureAvatarUrl": "",
-          "badge": []
-        },
-        "isoDateTime": "2011-10-10T09:25:49Z",
-        "status": "visible",
-        "numRecommends": 0,
-        "isHighlighted": false
-      }"""))
+        // THIS IS TEST DATA AND NEEDS TO BE POPULATED FORM THE API
+        val id = (json \ "message").as[String].toInt
+        Comment(Json.parse(s"""{
+          "id": $id,
+          "body": "$commentBody",
+          "responses": [],
+          "userProfile": {
+            "userId": "",
+            "displayName": "",
+            "webUrl": "",
+            "apiUrl": "",
+            "avatar": "",
+            "secureAvatarUrl": "",
+            "badge": []
+          },
+          "isoDateTime": "2011-10-10T09:25:49Z",
+          "status": "visible",
+          "numRecommends": 0,
+          "isHighlighted": false
+        }"""))
     }
   }
 
   override protected def getJsonOrError(url: String, onError: (Response) => String, headers: (String, String)*) =
     super.getJsonOrError(url, onError, headers :+ guClientHeader: _*)
 
-  override protected def postOrError(url: String, onError: (Response) => String, headers: (String, String)*) = 
-    super.postOrError(url, onError, headers :+ guClientHeader: _*)
+  override protected def postOrError(url: String, data: Map[String, Seq[String]], onError: (Response) => String, headers: (String, String)*) =
+    super.postOrError(url, data, onError, headers :+ guClientHeader: _*)
 
   private def guClientHeader = ("GU-Client", clientHeaderValue)
 }
