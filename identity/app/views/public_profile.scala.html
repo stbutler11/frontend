@@ -48,6 +48,16 @@
             
             <div class="fieldset__fields">
                 <ul class="unstyled">
+                    
+                    <li class="form-field">
+                        @if(user.statusFields.userEmailValidated.getOrElse(false)){
+                            <p class="form__note">Your email has been verified.</p>
+                        }else{
+                            <p class="form__note">Your email has not yet been verified.</p>
+                            <button type="button" class="submit-input" data-link-name="Resend verification email">Resend my verification email</button>
+                        }
+                    </li>
+
                     @inputField(Input(profileForm("publicFields.location"), '_label -> "Location"))
                     @select(
                         profileForm("privateFields.gender"),
